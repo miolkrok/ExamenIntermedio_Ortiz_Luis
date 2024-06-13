@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface IServicioBook {
 
-    void insert(Book b);
+    Book insert(Book b);
 
     List<Book> findAll();
 
     Book findById(Integer id);
 
-    void update(Book b);
+    Book update(Book b);
 
-    void delete(Integer id);
+    Integer delete(Integer id);
 }

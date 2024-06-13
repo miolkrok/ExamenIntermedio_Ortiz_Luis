@@ -4,7 +4,6 @@ import com.distribuida.db.Book;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 
@@ -16,17 +15,20 @@ public class ServicioBookImpl implements  IServicioBook{
 
 
     @Override
-    public void insert(Book b) {
+    public Book insert(Book b) {
         var tx = em.getTransaction();
 
         try {
             tx.begin();
             em.persist(b);
             tx.commit();
+
         }
         catch(Exception ex) {
             tx.rollback();
+
         }
+        return b;
     }
 
     @Override
@@ -41,29 +43,32 @@ public class ServicioBookImpl implements  IServicioBook{
     }
 
     @Override
-    public void update(Book b) {
+    public Book update(Book b) {
+
         var tx = em.getTransaction();
         try{
             tx.begin();
-            em.merge(b);
+             em.merge(b);
             tx.commit();
 
         }catch (Exception ex){
             tx.rollback();
         }
+        return b;
     }
 
     @Override
-    public void delete(Integer id) {
+    public Integer delete(Integer id) {
         var tx = em.getTransaction();
-        try{
-            tx.begin();
             Book b = this.findById(id);
-            em.remove(b);
-            tx.commit();
-
-        }catch (Exception ex){
-            tx.rollback();
-        }
+            if(b != null){
+                tx.begin();
+                em.remove(b);
+                tx.commit();
+                return 1;
+            }else {
+                tx.rollback();
+                return 0;
+            }
     }
 }

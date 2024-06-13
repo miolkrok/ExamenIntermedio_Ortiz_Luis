@@ -19,6 +19,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
@@ -35,21 +36,46 @@ public class Principal {
         IServicioBook servicio = CDI.current().select(IServicioBook.class).get();
 
         Book book = new Book();
-        book.setId(3);
-        book.setTitle("1984");
-        book.setAuthor("Marco ");
+        book.setId(1);
+        book.setTitle("Cien Años de Soledad");
+        book.setIsbn("isbn");
+        book.setAuthor("Gabriel Garcia Marquez");
+        book.setPrice(BigDecimal.valueOf(20.00));
+        Book book1 = new Book();
+        book1.setId(2);
+        book1.setTitle("Iliada");
+        book1.setIsbn("isbn");
+        book1.setAuthor("Homero");
+        book1.setPrice(BigDecimal.valueOf(20.00));
         servicio.insert(book);
+        servicio.insert(book1);
 
         System.out.println("se inserto");
 
-        // Retrieve and print all books
 
         servicio.findAll().forEach(b -> System.out.println(b.getId()+" "+b.getAuthor()));
 
         WebServer.builder()
                 .routing(it -> it
                         .get("/books", (req, res) -> res.send(gson.toJson(servicio.findAll())))
-                        .get("/books/{id}", (req, res) -> res.send(gson.toJson(servicio.findById(1))))                        )
+                        .get("/books/{id}", (req, res) ->{
+                            Integer reqInteger = Integer.valueOf(req.path().pathParameters().get("id"));
+                            res.send(gson.toJson(servicio.findById(reqInteger)));
+                        } )
+                        .post("/books",(req, res) ->{
+                            String reqBody = req.content().as(String.class);
+                            Book reqEntity = gson.fromJson(reqBody, Book.class);
+                            res.send(gson.toJson(servicio.insert(reqEntity)));
+                        }).put("/books",(req, res) -> {
+                            String reqBody = req.content().as(String.class);
+                            Book reqEntity = gson.fromJson(reqBody, Book.class);
+                            res.send(gson.toJson(servicio.update(reqEntity)));
+                        })
+                        .delete("/books/{id}",(req, res) ->{
+                                    Integer resInteger = Integer.valueOf(req.path().pathParameters().get("id"));
+                                    res.send(gson.toJson(servicio.delete(resInteger)));
+                                }
+                                ))
                 .port(8080)
                 .build()
                 .start();
@@ -61,9 +87,5 @@ public class Principal {
         lifecycle.stopApplication(null);
     }
 
-    /*static Book buscarLibro(ServerRequest req, ServerRequest res) {
-
-
-    }*/
 
 }

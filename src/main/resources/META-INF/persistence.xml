@@ -9,11 +9,11 @@
         <class>com.distribuida.db.Book</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.sqlite.JDBC"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlite:book.db;DB_CLOSE_DELAY=-1"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlite:book.db"/>
             <property name="jakarta.persistence.jdbc.user" value=""/>
             <property name="jakarta.persistence.jdbc.password" value=""/>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
-            <property name="jakarta.persistence.sql-load-script-source" value="META-INF/import.sql"/>
+            <property name="jakarta.persistence.sql-load-script-source" value="import.sql"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/>
