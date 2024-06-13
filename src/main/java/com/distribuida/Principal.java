@@ -1,6 +1,5 @@
 package com.distribuida;
 
-
 import com.distribuida.db.Book;
 import com.distribuida.servicios.IServicioBook;
 import com.distribuida.servicios.ServicioBookImpl;
@@ -23,12 +22,12 @@ import java.math.BigDecimal;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-
 public class Principal {
 
     private static ContainerLifecycle lifecycle = null;
 
-    private  static Gson gson = new Gson();
+    private static Gson gson = new Gson();
+
     public static void main(String[] args) {
         lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
         lifecycle.startApplication(null);
@@ -47,35 +46,33 @@ public class Principal {
         book1.setIsbn("isbn");
         book1.setAuthor("Homero");
         book1.setPrice(BigDecimal.valueOf(20.00));
-        servicio.insert(book);
-        servicio.insert(book1);
+        // servicio.insert(book);
+        // servicio.insert(book1);
 
         System.out.println("se inserto");
 
-
-        servicio.findAll().forEach(b -> System.out.println(b.getId()+" "+b.getAuthor()));
+        servicio.findAll().forEach(b -> System.out.println(b.getId() + " " + b.getAuthor()));
 
         WebServer.builder()
                 .routing(it -> it
                         .get("/books", (req, res) -> res.send(gson.toJson(servicio.findAll())))
-                        .get("/books/{id}", (req, res) ->{
+                        .get("/books/{id}", (req, res) -> {
                             Integer reqInteger = Integer.valueOf(req.path().pathParameters().get("id"));
                             res.send(gson.toJson(servicio.findById(reqInteger)));
-                        } )
-                        .post("/books",(req, res) ->{
+                        })
+                        .post("/books", (req, res) -> {
                             String reqBody = req.content().as(String.class);
                             Book reqEntity = gson.fromJson(reqBody, Book.class);
                             res.send(gson.toJson(servicio.insert(reqEntity)));
-                        }).put("/books",(req, res) -> {
+                        }).put("/books", (req, res) -> {
                             String reqBody = req.content().as(String.class);
                             Book reqEntity = gson.fromJson(reqBody, Book.class);
                             res.send(gson.toJson(servicio.update(reqEntity)));
                         })
-                        .delete("/books/{id}",(req, res) ->{
-                                    Integer resInteger = Integer.valueOf(req.path().pathParameters().get("id"));
-                                    res.send(gson.toJson(servicio.delete(resInteger)));
-                                }
-                                ))
+                        .delete("/books/{id}", (req, res) -> {
+                            Integer resInteger = Integer.valueOf(req.path().pathParameters().get("id"));
+                            res.send(gson.toJson(servicio.delete(resInteger)));
+                        }))
                 .port(8080)
                 .build()
                 .start();
@@ -83,9 +80,9 @@ public class Principal {
         shutdown();
 
     }
-    public static void shutdown()  {
+
+    public static void shutdown() {
         lifecycle.stopApplication(null);
     }
-
 
 }
